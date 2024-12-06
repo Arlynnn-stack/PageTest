@@ -17,6 +17,13 @@
             height: 200px;
             object-fit: cover;
         }
+
+        /* Gaya untuk gambar troli */
+        .cart-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+        }
     </style>
 </head>
 
@@ -29,29 +36,53 @@
     </header>
 
     <main class="container mx-auto p-6">
-        <!-- Produk List -->
-        <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+
+        <!-- Login Form untuk Seller -->
+        <section id="login-section" class="mb-8">
+            <h2 class="text-2xl font-bold mb-4">Login Seller</h2>
+            <form id="login-form" class="bg-white p-6 rounded shadow-lg">
+                <div class="mb-4">
+                    <label for="seller-username" class="block text-gray-700 font-bold mb-2">Username</label>
+                    <input type="text" id="seller-username" class="w-full p-2 border border-gray-300 rounded" required>
+                </div>
+                <div class="mb-4">
+                    <label for="seller-password" class="block text-gray-700 font-bold mb-2">Kata Laluan</label>
+                    <input type="password" id="seller-password" class="w-full p-2 border border-gray-300 rounded" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Log Masuk</button>
+            </form>
+        </section>
+
+        <!-- Produk List (Hanya Ditunjukkan Selepas Seller Login) -->
+        <section id="product-section" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8 hidden">
+            <h2 class="text-2xl font-bold mb-4 col-span-full">Tambah Produk</h2>
             <!-- Produk Contoh -->
             <div class="card max-w-sm rounded overflow-hidden shadow-lg bg-white">
                 <img src="https://via.placeholder.com/300" alt="Nasi Lemak" class="w-full">
                 <div class="px-6 py-4">
                     <div class="font-bold text-xl mb-2">Nasi Lemak</div>
                     <p class="text-gray-700 text-base">Harga: RM12.00</p>
+                    <!-- Pilihan Kuantiti dan Warna -->
+                    <label for="quantity" class="block text-gray-700 mt-2">Kuantiti</label>
+                    <input type="number" id="quantity" value="1" min="1" class="w-20 p-2 border border-gray-300 rounded">
+                    <label for="color" class="block text-gray-700 mt-2">Warna</label>
+                    <select id="color" class="w-full p-2 border border-gray-300 rounded">
+                        <option value="Biru">Biru</option>
+                        <option value="Merah">Merah</option>
+                    </select>
                 </div>
                 <div class="px-6 pt-4 pb-2">
-                    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="addToCart('Nasi Lemak', 12.00)">Tambah ke Troli</button>
+                    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="addToCart('Nasi Lemak', 12.00, document.getElementById('quantity').value, document.getElementById('color').value)">Tambah ke Troli</button>
                 </div>
             </div>
-            <!-- Tambah produk lain di sini -->
         </section>
 
         <!-- Cart Section -->
         <section id="cart" class="mt-8">
             <h2 class="text-2xl font-bold mb-4">Troli Anda</h2>
-            <div id="cart-items" class="mb-4"></div>
-            <div class="flex justify-between">
-                <span class="font-bold">Cas COD: RM4.00</span>
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="goToCheckout()">Ke Checkout</button>
+            <button id="view-cart-btn" class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded" onclick="toggleCart()">Lihat Troli</button>
+            <div id="cart-items" class="mb-4 mt-4 hidden">
+                <!-- Cart items will be listed here -->
             </div>
         </section>
 
@@ -84,9 +115,24 @@
     <script>
         let cart = [];
 
+        // Fungsi untuk login seller
+        document.getElementById('login-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const username = document.getElementById('seller-username').value;
+            const password = document.getElementById('seller-password').value;
+
+            // Login Verification (Example)
+            if (username === 'seller' && password === 'password') {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('product-section').classList.remove('hidden');
+            } else {
+                alert('Nama Pengguna atau Kata Laluan Salah!');
+            }
+        });
+
         // Fungsi untuk menambah item ke dalam troli
-        function addToCart(name, price) {
-            cart.push({ name, price });
+        function addToCart(name, price, quantity, color) {
+            cart.push({ name, price, quantity, color });
             updateCart();
         }
 
@@ -97,32 +143,12 @@
 
             let total = 0;
             cart.forEach(item => {
-                total += item.price;
-                cartItems.innerHTML += `<div class="flex justify-between p-2 border-b">${item.name} - RM${item.price.toFixed(2)}</div>`;
+                total += item.price * item.quantity;
+                cartItems.innerHTML += `<div class="flex justify-between p-2 border-b">
+                    <img src="https://via.placeholder.com/50" alt="${item.name}" class="cart-image">
+                    <span>${item.name} (${item.quantity}X)</span> - RM${(item.price * item.quantity).toFixed(2)}
+                </div>`;
             });
 
             total += 4.00; // Cas COD
-            cartItems.innerHTML += `<div class="font-bold mt-2">Jumlah: RM${total.toFixed(2)}</div>`;
-        }
-
-        // Fungsi untuk pergi ke halaman checkout
-        function goToCheckout() {
-            document.getElementById('cart').classList.add('hidden');
-            document.getElementById('checkout-section').classList.remove('hidden');
-        }
-
-        // Fungsi untuk menghantar pesanan
-        document.getElementById('checkout-form').addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            const name = document.getElementById('name').value;
-            const address = document.getElementById('address').value;
-            const phone = document.getElementById('phone').value;
-
-            alert(`Pesanan anda telah diterima!\nNama: ${name}\nAlamat: ${address}\nTelefon: ${phone}`);
-            // Hantar data ke server atau proses lanjut di sini
-        });
-    </script>
-</body>
-
-</html>
+            cartItems.innerHTML += `<div class="font-bold mt-2
