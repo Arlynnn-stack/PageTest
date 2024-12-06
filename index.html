@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ms">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lynnn Shop</title>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom style untuk rekaan tambahan */
+        .card:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card img {
+            height: 200px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <!-- Header -->
+    <header class="bg-green-500 text-white p-6 text-center">
+        <h1 class="text-4xl font-bold">Selamat Datang ke Lynnn Shop</h1>
+        <p class="text-xl">Makanan Sedia Untuk Dihantar ke Pintu Anda</p>
+    </header>
+
+    <main class="container mx-auto p-6">
+        <!-- Produk List -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Produk Contoh -->
+            <div class="card max-w-sm rounded overflow-hidden shadow-lg bg-white">
+                <img src="https://via.placeholder.com/300" alt="Nasi Lemak" class="w-full">
+                <div class="px-6 py-4">
+                    <div class="font-bold text-xl mb-2">Nasi Lemak</div>
+                    <p class="text-gray-700 text-base">Harga: RM12.00</p>
+                </div>
+                <div class="px-6 pt-4 pb-2">
+                    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onclick="addToCart('Nasi Lemak', 12.00)">Tambah ke Troli</button>
+                </div>
+            </div>
+            <!-- Tambah produk lain di sini -->
+        </section>
+
+        <!-- Cart Section -->
+        <section id="cart" class="mt-8">
+            <h2 class="text-2xl font-bold mb-4">Troli Anda</h2>
+            <div id="cart-items" class="mb-4"></div>
+            <div class="flex justify-between">
+                <span class="font-bold">Cas COD: RM4.00</span>
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="goToCheckout()">Ke Checkout</button>
+            </div>
+        </section>
+
+        <!-- Checkout Form (Hidden by Default) -->
+        <section id="checkout-section" class="mt-8 hidden">
+            <h2 class="text-2xl font-bold mb-4">Sila Masukkan Maklumat Penghantaran</h2>
+            <form id="checkout-form" class="bg-white p-6 rounded shadow-lg">
+                <div class="mb-4">
+                    <label for="name" class="block text-gray-700 font-bold mb-2">Nama</label>
+                    <input type="text" id="name" class="w-full p-2 border border-gray-300 rounded" required>
+                </div>
+                <div class="mb-4">
+                    <label for="address" class="block text-gray-700 font-bold mb-2">Alamat Penghantaran</label>
+                    <textarea id="address" class="w-full p-2 border border-gray-300 rounded" required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="phone" class="block text-gray-700 font-bold mb-2">Nombor Telefon</label>
+                    <input type="tel" id="phone" class="w-full p-2 border border-gray-300 rounded" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Hantar Pesanan</button>
+            </form>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white text-center p-4 mt-6">
+        <p>&copy; 2024 Lynnn Shop</p>
+    </footer>
+
+    <script>
+        let cart = [];
+
+        // Fungsi untuk menambah item ke dalam troli
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCart();
+        }
+
+        // Fungsi untuk mengemas kini carta
+        function updateCart() {
+            const cartItems = document.getElementById('cart-items');
+            cartItems.innerHTML = '';
+
+            let total = 0;
+            cart.forEach(item => {
+                total += item.price;
+                cartItems.innerHTML += `<div class="flex justify-between p-2 border-b">${item.name} - RM${item.price.toFixed(2)}</div>`;
+            });
+
+            total += 4.00; // Cas COD
+            cartItems.innerHTML += `<div class="font-bold mt-2">Jumlah: RM${total.toFixed(2)}</div>`;
+        }
+
+        // Fungsi untuk pergi ke halaman checkout
+        function goToCheckout() {
+            document.getElementById('cart').classList.add('hidden');
+            document.getElementById('checkout-section').classList.remove('hidden');
+        }
+
+        // Fungsi untuk menghantar pesanan
+        document.getElementById('checkout-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const address = document.getElementById('address').value;
+            const phone = document.getElementById('phone').value;
+
+            alert(`Pesanan anda telah diterima!\nNama: ${name}\nAlamat: ${address}\nTelefon: ${phone}`);
+            // Hantar data ke server atau proses lanjut di sini
+        });
+    </script>
+</body>
+
+</html>
